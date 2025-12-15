@@ -1,0 +1,29 @@
+services:
+  jupyterlab:
+    # Construye la imagen usando el Dockerfile en el directorio actual
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Nombre fácil de recordar para el contenedor
+    container_name: jupyter-dev-env
+    
+    # *** NUEVA SECCIÓN: Definición de Variables de Entorno ***
+    environment:
+      # Definimos el token fijo que el usuario usará para acceder a JupyterLab
+      - JUPYTER_TOKEN=diplomado_2025
+    
+    # Mapeo de puertos: puerto local:puerto contenedor
+    ports:
+      - "8888:8888"
+      
+    # Sincronización de carpetas: Carpeta actual:Carpeta de trabajo en Docker (/app)
+    volumes:
+      - .:/app
+    
+    # Reinicia automáticamente si el contenedor falla
+    restart: always
+
+    # *** COMANDO DE INICIO MODIFICADO ***
+    # Usamos la variable de entorno JUPYTER_TOKEN en el comando.
+    command: /bin/bash -c "poetry run jupyter-lab --ip=0.0.0.0 --port=8888 --no-browser --NotebookApp.token=$$JUPYTER_TOKEN --allow-root"

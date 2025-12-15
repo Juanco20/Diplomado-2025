@@ -1,86 +1,73 @@
-# Proyecto de Desarrollo de Datos (Nivel 0 - Dockerizado)
+# Proyecto de Desarrollo de Datos (Nivel 0 - Profesional)
 
-Este repositorio contiene la estructura básica para comenzar a trabajar en el diplomado, utilizando **Docker** para garantizar que su entorno de desarrollo sea **reproducible** y funcione exactamente igual en cualquier máquina (Windows, Mac, Linux).
+Este repositorio contiene la estructura y el entorno de desarrollo listos para usar en el diplomado. Hemos configurado un ambiente profesional utilizando **Docker Compose** y **Poetry** para garantizar la **reproducibilidad** total de su entorno.
 
-## Introducción: El Problema de la Reproducibilidad
+## ⚙️ Herramientas Clave en este Entorno
 
-En el mundo de la ciencia de datos, a menudo un proyecto funciona "en mi máquina, pero no en la tuya" debido a conflictos de versiones de Python o librerías.
+| Herramienta | Función |
+| :--- | :--- |
+| **Docker Compose** | Orquestación: Permite construir y levantar el entorno completo (imagen, contenedor, puertos, volúmenes) con un solo comando. |
+| **Poetry** | Dependencias: Gestiona las librerías de Python. Asegura que todos utilicemos las versiones exactas listadas en `pyproject.toml`. |
+| **JupyterLab** | IDE: Entorno de trabajo principal donde escribirá y ejecutará su código. |
 
-**Docker resuelve esto:**
-1.  Crea una máquina virtual liviana (Contenedor) que incluye solo lo esencial (Python, JupyterLab, Pandas).
-2.  Empaqueta esa "máquina" con el código y la configuración necesaria.
-3.  Usted ejecuta el paquete, y la aplicación (JupyterLab) siempre tendrá el mismo sistema operativo base, las mismas librerías y las mismas versiones.
+## 🐳 Estructura del Repositorio
 
-## Estructura del Repositorio
-
-| Archivo/Carpeta | Propósito | Explicación para Principiantes |
-| :--- | :--- | :--- |
-| `Datos/` | **Datasets de Entrada** | Carpeta donde se guardan los archivos de datos crudos (ej: `.csv`, `.json`). El código en Jupyter los lee desde aquí. |
-| `Cuadernos/` | **Código de Desarrollo** | Contiene todos los archivos de desarrollo (`.ipynb` de JupyterLab). Es el lugar donde usted escribe y ejecuta su código Python. |
-| `Dockerfile` | **La Receta de la Imagen** | Archivo de texto con las instrucciones exactas que Docker debe seguir para crear el entorno. Es como la lista de ingredientes y pasos de un pastel. |
-| `setup_docker_jupyter.sh` | **El Automatizador** | Script de un solo comando para construir la imagen, crear el Contenedor y dejar JupyterLab corriendo. |
+| Archivo/Carpeta | Propósito |
+| :--- | :--- |
+| `Datos/` | Almacena los datasets de entrada (datos crudos). |
+| `Cuadernos/` | Contiene los archivos de desarrollo (`.ipynb`). |
+| `Dockerfile` | La receta de la imagen: Instrucciones para instalar Python, Poetry y las librerías. |
+| `pyproject.toml` | Lista de dependencias del proyecto que Poetry gestiona. |
+| `docker-compose.yml` | El plano de la orquestación: Define cómo construir la imagen (`Dockerfile`) y cómo iniciar el contenedor. |
+| `setup_docker_jupyter.sh` | (Obsoleto): Reemplazado por el comando único `docker compose up --build`. |
 
 ---
 
-## Guía de Docker: Las 5 Fases del Entorno
+## 🚀 Guía de Inicio Rápido (Con Docker Compose)
 
-### Fase 1: La Imagen (La Receta)
+Asumiendo que tiene Docker Desktop instalado y ejecutándose:
 
-La **Imagen** es un paquete estático e inmutable que contiene todo el sistema operativo, las librerías (`pandas`, `numpy`) y las aplicaciones (`JupyterLab`).
+### Paso 1: Ir a la Carpeta del Proyecto
 
-El archivo `Dockerfile` es la receta para construirla. Analicemos sus pasos clave:
-
-| Instrucción | Explicación |
-| :--- | :--- |
-| `FROM python:3.11-slim` | **La Base.** Indica que el sistema comienza con una versión limpia y ligera de Python 3.11. |
-| `WORKDIR /app` | **El Directorio de Trabajo.** Establece `/app` como la carpeta principal del proyecto dentro del contenedor. Todo nuestro código se ejecutará desde aquí. |
-| `RUN pip install ...` | **Las Librerías.** Instala todas las dependencias de Python necesarias (`jupyterlab`, `pandas`, `numpy`) en la Imagen. |
-| `EXPOSE 8888` | **El Puerto Interno.** Informa a Docker que el servicio JupyterLab está disponible internamente en el puerto 8888 del contenedor. |
-| `CMD ["jupyter-lab", ...]` | **El Encendido.** Es el comando que Docker ejecuta automáticamente cuando se inicia el Contenedor. |
-
-### Fase 2: Construyendo la Imagen
-
-Este paso compila la receta y crea la imagen binaria que usaremos.
+Abra su terminal y navegue al directorio raíz del proyecto:
 
 ```bash
-docker build -t jupyter-test-env .
+cd data-dev-test
 ````
 
-### Fase 3: El Contenedor (La Instancia en Ejecución)
+### Paso 2: Iniciar y Construir el Entorno
 
-El **Contenedor** es la instancia de la Imagen que está ejecutándose en tiempo real. Es el equivalente a "encender" la máquina virtual.
+Este comando realiza tres acciones en una: (1) Construye la imagen, (2) Crea y (3) Ejecuta el contenedor de JupyterLab, mapeando el puerto `8888` y sincronizando su carpeta.
 
-El comando `docker run` inicia esta instancia y utiliza argumentos cruciales para la conexión con su máquina local:
+```bash
+# Usa 'up' para iniciar y '--build' para compilar el Dockerfile primero
+# Este comando es el moderno: 'docker compose' (sin guion)
+sudo docker compose up --build -d
+```
 
-| Argumento | Explicación | Función Clave |
-| :--- | :--- | :--- |
-| `-d` | **Detach.** Corre el contenedor en segundo plano, liberando su terminal. | Pone el servicio en marcha sin bloquear la terminal. |
-| `-p 8888:8888` | **Mapeo de Puertos.** Conecta el puerto 8888 de su máquina (izquierda) al puerto 8888 del contenedor (derecha). | Permite acceder al servicio web (JupyterLab) desde su navegador. |
-| `-v "$(pwd)":/app` | **Volumen (Sincronización).** Sincroniza su carpeta local completa con la carpeta `/app` dentro del Contenedor. | Permite editar archivos localmente (en VS Code) y que el código de Jupyter los vea al instante. |
-| `--name ...` | **Nombre.** Asigna un nombre fácil de recordar al contenedor. | Permite detenerlo o reiniciarlo fácilmente. |
+*Si el comando fue exitoso, el contenedor ahora se llama `jupyter-dev-env` y está corriendo.*
 
-### Fase 4: Accediendo a JupyterLab
+### Paso 3: Obtener el Token de Acceso
 
-Una vez que el Contenedor está corriendo, debe obtener un token de seguridad que JupyterLab genera automáticamente.
+El servicio puede tardar unos segundos en generar el token. Use el comando `logs` para capturarlo:
 
-1.  **Ejecute el script de inicio** (`./setup_docker_jupyter.sh`) si no lo ha hecho.
+```bash
+# Usa el comando moderno: 'docker compose' (sin guion)
+sudo docker compose logs jupyterlab
+```
 
-2.  **Obtenga la URL de acceso:** Use este comando para ver el log de arranque del Contenedor, que contiene la dirección completa.
+*Busque la URL que comienza con `http://0.0.0.0:8888/lab?token=...`*
 
-    ```bash
-    docker logs jupyter-test-env-container
-    ```
-
-    *Busque una línea que comience con `http://127.0.0.1:8888/lab?token=...`*
-
-3.  **Acceda:** Copie y pegue esa URL en su navegador. Ahora puede abrir el archivo `Cuadernos/Exploracion.ipynb` y ejecutar el código de Python.
+Copie esa URL en su navegador. Dentro de JupyterLab, verá sus carpetas `Datos/` y `Cuadernos/`.
 
 -----
 
-### Detener y Limpiar el Entorno
+### 🛑 Detener el Entorno
 
-Para liberar el puerto 8888 y apagar el entorno de forma segura, use el siguiente comando:
+Para apagar el servicio de JupyterLab y liberar el puerto 8888:
 
 ```bash
-docker stop jupyter-test-env-container
+# Usa el comando moderno: 'docker compose' (sin guion)
+sudo docker compose down
 ```
+**TOKEN DE ACCESO**: diplomado_2025
