@@ -1,5 +1,11 @@
-*.csv
-*.xlsx
-*checkpoint*
-Datos/.ipynb_checkpoints/
-Cuadernos/.ipynb_checkpoints/
+# Ignorar basura de Jupyter
+.ipynb_checkpoints/
+
+# Ignorar archivos temporales
+__pycache__/
+*.pyc
+
+# NO ignorar cuadernos ni datos
+# cuadernos/
+# datos/
+# *.csv
