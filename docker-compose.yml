@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     
     # Nombre fácil de recordar para el contenedor
-    container_name: jupyter-dev-env
+    container_name: jupyter_juan_camilo
     
     # *** NUEVA SECCIÓN: Definición de Variables de Entorno ***
     environment:
