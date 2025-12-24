@@ -1,6 +1,3 @@
-# Ignorar basura de Jupyter
-.ipynb_checkpoints/
-
 # Ignorar archivos temporales
 __pycache__/
 *.pyc
