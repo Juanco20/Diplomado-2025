@@ -1,6 +1,7 @@
 # Ignorar archivos temporales
 __pycache__/
 *.pyc
+.ipynb_checkpoints/
 
 # NO ignorar cuadernos ni datos
 # cuadernos/
